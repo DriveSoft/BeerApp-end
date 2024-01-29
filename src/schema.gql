@@ -50,11 +50,17 @@ input WhereCustomerInput {
 
 type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
+  signin(signInInput: SignInInput!): SignResponse!
   updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
   removeAuth(id: Int!): Auth!
 }
 
 input SignUpInput {
+  email: String!
+  password: String!
+}
+
+input SignInInput {
   email: String!
   password: String!
 }

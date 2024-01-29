@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { SignUpInput } from './dto/signup.input';
+import { SignUpInput } from './dto/signup-input';
+import { SignInInput } from './dto/signin-input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -12,7 +13,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async signup(signUpInput: SignUpInput) {
     const hashedPassword = await argon.hash(signUpInput.password);
@@ -33,8 +34,32 @@ export class AuthService {
     return { accessToken, refreshToken, customer };
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async signin(signInInput: SignInInput) {
+    const customer = await this.prisma.customer.findUnique({
+      where: { email: signInInput.email },
+    });
+
+    if (!customer) {
+      throw new Error('Access Denied');
+    }
+
+    const isPasswordValid = await argon.verify(
+      customer.hashedPassword,
+      signInInput.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new Error('Access Denied');
+    }
+
+    const { accessToken, refreshToken } = await this.createTokens(
+      customer.id,
+      customer.email,
+    );
+
+    await this.updateRefreshToken(customer.id, refreshToken);
+
+    return { accessToken, refreshToken, customer };
   }
 
   findOne(id: number) {
