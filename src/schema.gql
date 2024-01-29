@@ -18,7 +18,19 @@ type Customer {
 """
 scalar Timestamp
 
+type Auth {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type SignResponse {
+  accessToken: String!
+  refreshToken: String!
+  customer: Customer!
+}
+
 type Query {
+  auth(id: Int!): Auth!
   customers(data: GetCustomerInput!): [Customer!]!
 }
 
@@ -34,4 +46,21 @@ input WhereCustomerInput {
   email: String
   createdAt: Timestamp
   updatedAt: Timestamp
+}
+
+type Mutation {
+  signup(signUpInput: SignUpInput!): SignResponse!
+  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
+  removeAuth(id: Int!): Auth!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+}
+
+input UpdateAuthInput {
+  email: String
+  password: String
+  id: Int!
 }
