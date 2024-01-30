@@ -6,17 +6,17 @@ type Customer {
   id: ID!
 
   """Date and time when object was created."""
-  createdAt: Timestamp!
+  createdAt: DateTime!
 
   """Date and time when the object was updated last time."""
-  updatedAt: Timestamp!
+  updatedAt: DateTime!
   email: String!
 }
 
 """
-`Date` type as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
-scalar Timestamp
+scalar DateTime
 
 type Auth {
   """Example field (placeholder)"""
@@ -35,6 +35,7 @@ type LogoutResponse {
 
 type Query {
   auth(id: Int!): Auth!
+  hello: String!
   customers(data: GetCustomerInput!): [Customer!]!
 }
 
@@ -48,8 +49,8 @@ input GetCustomerInput {
 input WhereCustomerInput {
   id: String
   email: String
-  createdAt: Timestamp
-  updatedAt: Timestamp
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type Mutation {
