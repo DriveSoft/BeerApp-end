@@ -18,7 +18,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async signup(signUpInput: SignUpInput) {
     const hashedPassword = await argon.hash(signUpInput.password);
@@ -105,7 +105,7 @@ export class AuthService {
     return { id: customer.id, email: customer.email, role: customer.role };
   }
 
-  async remove(currentCustomerId: string, customerId: string,) {
+  async remove(currentCustomerId: string, customerId: string) {
     const currentCustomer = await this.prisma.customer.findUnique({
       where: { id: currentCustomerId },
     });
