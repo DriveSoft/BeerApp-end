@@ -70,6 +70,114 @@
 - **Return Type**: `DeleteCustomerResponse`
 
 
+
+## Examples
+
+```bash
+mutation SignUp($input:SignUpInput!) {
+	signup(signUpInput:$input){
+	   accessToken
+	   refreshToken
+	   customer{email}
+  }
+}
+
+variables:
+{
+  "input": {
+	   "email" : "test@test.com",
+	   "password":"12345"
+	}
+}
+```
+
+
+```bash
+mutation SignIn($input:SignInInput!){
+      signin(signInInput:$input){
+		accessToken
+	   refreshToken
+	   customer{email}
+	}
+}
+
+variables:
+{
+  "input": {
+	   "email" : "test@test.com",
+	   "password":"12345"
+	}
+}
+```
+
+
+```bash
+mutation Logout($id:String!){
+   logout(id:$id){loggedOut}
+}
+
+variables:
+{"id": "302767e2-3d32-4103-adad-2699b61859b2"}
+```
+
+
+```bash
+mutation Refresh {
+   getNewTokens{accessToken refreshToken}
+}
+
+variables:
+{"id": "302767e2-3d32-4103-adad-2699b61859b2"}
+```
+
+
+```bash
+query getCustomer($id: String!) {
+   getCustomer(id: $id){
+      id
+      email
+      role
+   }
+}
+
+variables:
+{"id": "302767e2-3d32-4103-adad-2699b61859b2"}
+```
+
+
+```bash
+mutation updateCustomer($input:UpdateAuthInput!) {
+	updateCustomer(updateAuthInput:$input){
+      id
+      email
+      role		
+   }
+}
+
+variables:
+{
+  "input": {
+		"id": "1d68963f-a414-460a-adf4-a8df46ad618d",
+	   "email": "new@new.com",
+      "role": "USER"
+	}
+}
+```
+
+
+```bash
+mutation deleteCustomer($id:String!) {
+	deleteCustomer(id:$id){
+      id	
+   }
+}
+
+variables:
+{"id" : "1d68963f-a414-460a-adf4-a8df46ad618d"}
+```
+
+
+
 # Node.js recruitment task - senior
 
 This repository contains the base code for recruitment exercise. Complete the tasks listed below and publish the solution on your github. Send us a link to your repository at least 1 day before the interview. 
