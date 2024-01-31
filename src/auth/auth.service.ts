@@ -18,7 +18,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async signup(signUpInput: SignUpInput) {
     const hashedPassword = await argon.hash(signUpInput.password);
@@ -78,11 +78,22 @@ export class AuthService {
   }
 
   async update(
-    id: string,
+    currentCustomerId: string,
+    customerId: string,
     updateAuthInput: UpdateAuthInput,
   ): Promise<GetCustomerResponse> {
+    const currentCustomer = await this.prisma.customer.findUnique({
+      where: { id: currentCustomerId },
+    });
+
+    if (!currentCustomer)
+      throw new ForbiddenException('Current customer not found');
+
+    if (currentCustomer.role !== 'ADMIN')
+      throw new ForbiddenException('Access Denied');
+
     const customer = await this.prisma.customer.update({
-      where: { id: id },
+      where: { id: customerId },
       data: {
         email: updateAuthInput.email,
         role: updateAuthInput.role,
@@ -94,14 +105,24 @@ export class AuthService {
     return { id: customer.id, email: customer.email, role: customer.role };
   }
 
-  async remove(id: string) {
+  async remove(currentCustomerId: string, customerId: string,) {
+    const currentCustomer = await this.prisma.customer.findUnique({
+      where: { id: currentCustomerId },
+    });
+
+    if (!currentCustomer)
+      throw new ForbiddenException('Current customer not found');
+
+    if (currentCustomer.role !== 'ADMIN')
+      throw new ForbiddenException('Access Denied');
+
     const customer = await this.prisma.customer.deleteMany({
-      where: { id: id },
+      where: { id: customerId },
     });
 
     if (customer.count === 0) throw new NotFoundException('Customer not found');
 
-    return { id: id };
+    return { id: customerId };
   }
 
   async createTokens(customerId: string, email: string) {

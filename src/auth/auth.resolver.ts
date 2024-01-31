@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
 import { SignUpInput } from './dto/signup-input';
@@ -57,12 +57,22 @@ export class AuthResolver {
   }
 
   @Mutation(() => GetCustomerResponse, { name: 'updateCustomer' })
-  updateCustomer(@Args('updateAuthInput') updateAuthInput: UpdateAuthInput) {
-    return this.authService.update(updateAuthInput.id, updateAuthInput);
+  updateCustomer(
+    @Args('updateAuthInput') updateAuthInput: UpdateAuthInput,
+    @CurrentCustomerId() customerId: string,
+  ) {
+    return this.authService.update(
+      customerId,
+      updateAuthInput.id,
+      updateAuthInput,
+    );
   }
 
   @Mutation(() => DeleteCustomerResponse, { name: 'deleteCustomer' })
-  deleteCustomer(@Args('id') id: string) {
-    return this.authService.remove(id);
+  deleteCustomer(
+    @Args('id') id: string,
+    @CurrentCustomerId() customerId: string,
+  ) {
+    return this.authService.remove(customerId, id);
   }
 }
