@@ -12,6 +12,8 @@ import { CurrentCustomerId } from './decorators/currentCustomerId.decorator';
 import { CurrentCustomer } from './decorators/currentCustomer.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import { GetCustomerResponse } from './dto/get-response';
+import { DeleteCustomerResponse } from './dto/delete-response';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -27,16 +29,6 @@ export class AuthResolver {
   @Mutation(() => SignResponse)
   signin(@Args('signInInput') signInInput: SignInInput) {
     return this.authService.signin(signInInput);
-  }
-
-  @Query(() => Auth, { name: 'auth' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.authService.findOne(id);
-  }
-
-  @Mutation(() => Auth)
-  updateAuth(@Args('updateAuthInput') updateAuthInput: UpdateAuthInput) {
-    return this.authService.update(updateAuthInput.id, updateAuthInput);
   }
 
   @Mutation(() => LogoutResponse)
@@ -57,5 +49,20 @@ export class AuthResolver {
     @CurrentCustomer('refreshToken') refreshToken: string,
   ) {
     return this.authService.getNewTokens(customerId, refreshToken);
+  }
+
+  @Query(() => GetCustomerResponse, { name: 'getCustomer' })
+  getCustomer(@Args('id') id: string) {
+    return this.authService.getCustomer(id);
+  }
+
+  @Mutation(() => GetCustomerResponse, { name: 'updateCustomer' })
+  updateCustomer(@Args('updateAuthInput') updateAuthInput: UpdateAuthInput) {
+    return this.authService.update(updateAuthInput.id, updateAuthInput);
+  }
+
+  @Mutation(() => DeleteCustomerResponse, { name: 'deleteCustomer' })
+  deleteCustomer(@Args('id') id: string) {
+    return this.authService.remove(id);
   }
 }

@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { SignUpInput } from './dto/signup-input';
 import { SignInInput } from './dto/signin-input';
 import { UpdateAuthInput } from './dto/update-auth.input';
@@ -6,6 +10,7 @@ import { PrismaService } from 'src/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
+import { GetCustomerResponse } from './dto/get-response';
 
 @Injectable()
 export class AuthService {
@@ -62,16 +67,41 @@ export class AuthService {
     return { accessToken, refreshToken, customer };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async getCustomer(id: string): Promise<GetCustomerResponse> {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id: id },
+    });
+
+    if (!customer) throw new NotFoundException('Customer not found');
+
+    return { id: customer.id, email: customer.email, role: customer.role };
   }
 
-  update(id: number, updateAuthInput: UpdateAuthInput) {
-    return `This action updates a #${id} auth`;
+  async update(
+    id: string,
+    updateAuthInput: UpdateAuthInput,
+  ): Promise<GetCustomerResponse> {
+    const customer = await this.prisma.customer.update({
+      where: { id: id },
+      data: {
+        email: updateAuthInput.email,
+        role: updateAuthInput.role,
+      },
+    });
+
+    if (!customer) throw new NotFoundException('Customer not found');
+
+    return { id: customer.id, email: customer.email, role: customer.role };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async remove(id: string) {
+    const customer = await this.prisma.customer.deleteMany({
+      where: { id: id },
+    });
+
+    if (customer.count === 0) throw new NotFoundException('Customer not found');
+
+    return { id: id };
   }
 
   async createTokens(customerId: string, email: string) {

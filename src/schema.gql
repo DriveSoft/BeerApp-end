@@ -18,11 +18,6 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Auth {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
 type SignResponse {
   accessToken: String!
   refreshToken: String!
@@ -38,9 +33,19 @@ type NewTokensResponse {
   refreshToken: String!
 }
 
+type GetCustomerResponse {
+  id: String!
+  email: String!
+  role: String!
+}
+
+type DeleteCustomerResponse {
+  id: String!
+}
+
 type Query {
-  auth(id: Int!): Auth!
   hello: String!
+  getCustomer(id: String!): GetCustomerResponse!
   customers(data: GetCustomerInput!): [Customer!]!
 }
 
@@ -61,9 +66,10 @@ input WhereCustomerInput {
 type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
   signin(signInInput: SignInInput!): SignResponse!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
   logout(id: String!): LogoutResponse!
   getNewTokens: NewTokensResponse!
+  updateCustomer(updateAuthInput: UpdateAuthInput!): GetCustomerResponse!
+  deleteCustomer(id: String!): DeleteCustomerResponse!
 }
 
 input SignUpInput {
@@ -77,7 +83,8 @@ input SignInInput {
 }
 
 input UpdateAuthInput {
-  email: String
+  email: String!
   password: String
-  id: Int!
+  id: String!
+  role: String!
 }
