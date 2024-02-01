@@ -67,7 +67,7 @@ type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
   activate(activationCode: ActivationCode!): Boolean!
   signin(signInInput: SignInInput!): SignResponse!
-  logout(id: String!): LogoutResponse!
+  logout: LogoutResponse!
   getNewTokens: NewTokensResponse!
   updateCustomer(updateAuthInput: UpdateAuthInput!): GetCustomerResponse!
   deleteCustomer(id: String!): DeleteCustomerResponse!

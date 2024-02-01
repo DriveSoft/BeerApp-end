@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { SignUpInput } from './dto/signup-input';
 import { SignInInput } from './dto/signin-input';
@@ -106,27 +107,35 @@ export class AuthService {
     customerId: string,
     updateAuthInput: UpdateAuthInput,
   ): Promise<GetCustomerResponse> {
-    const currentCustomer = await this.prisma.customer.findUnique({
-      where: { id: currentCustomerId },
-    });
+    console.log("currentCustomerId================", currentCustomerId);
+    try {
+      const currentCustomer = await this.prisma.customer.findUnique({
+        where: { id: currentCustomerId },
+      });
 
-    if (!currentCustomer)
-      throw new ForbiddenException('Current customer not found');
+      if (currentCustomer.role !== 'ADMIN')
+        throw new ForbiddenException('Access Denied');
 
-    if (currentCustomer.role !== 'ADMIN')
-      throw new ForbiddenException('Access Denied');
+      const customer = await this.prisma.customer.update({
+        where: { id: customerId },
+        data: {
+          email: updateAuthInput.email,
+          role: updateAuthInput.role,
+        },
+      });
 
-    const customer = await this.prisma.customer.update({
-      where: { id: customerId },
-      data: {
-        email: updateAuthInput.email,
-        role: updateAuthInput.role,
-      },
-    });
+      if (!customer) throw new NotFoundException('Customer not found');
 
-    if (!customer) throw new NotFoundException('Customer not found');
-
-    return { id: customer.id, email: customer.email, role: customer.role };
+      return { id: customer.id, email: customer.email, role: customer.role };
+    } catch (error) {
+      // Check if the error is specifically related to the user not being found
+      if (error.code === 'P2025') {
+        throw new ForbiddenException('Current customer not found');
+      } else {
+        console.error('Error finding user:', error.message);
+        throw new InternalServerErrorException(error.message);
+      }
+    }
   }
 
   async remove(currentCustomerId: string, customerId: string) {
