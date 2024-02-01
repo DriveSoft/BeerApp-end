@@ -147,7 +147,7 @@ variables:
 
 ```bash
 mutation updateCustomer($input:UpdateAuthInput!) {
-	updateCustomer(updateAuthInput:$input){
+   updateCustomer(updateAuthInput:$input){
       id
       email
       role		

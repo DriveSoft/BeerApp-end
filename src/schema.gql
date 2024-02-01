@@ -65,6 +65,7 @@ input WhereCustomerInput {
 
 type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
+  activate(activationCode: ActivationCode!): Boolean!
   signin(signInInput: SignInInput!): SignResponse!
   logout(id: String!): LogoutResponse!
   getNewTokens: NewTokensResponse!
@@ -75,6 +76,10 @@ type Mutation {
 input SignUpInput {
   email: String!
   password: String!
+}
+
+input ActivationCode {
+  activationCode: String!
 }
 
 input SignInInput {

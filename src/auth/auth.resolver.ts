@@ -14,6 +14,7 @@ import { UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
 import { GetCustomerResponse } from './dto/get-response';
 import { DeleteCustomerResponse } from './dto/delete-response';
+import { ActivationCode } from './dto/activation-input';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -23,6 +24,12 @@ export class AuthResolver {
   @Mutation(() => SignResponse)
   signup(@Args('signUpInput') signUpInput: SignUpInput) {
     return this.authService.signup(signUpInput);
+  }
+
+  @Public()
+  @Mutation(() => Boolean)
+  activate(@Args('activationCode') activationCode: ActivationCode) {
+    return this.authService.activate(activationCode);
   }
 
   @Public()

@@ -11,6 +11,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { GetCustomerResponse } from './dto/get-response';
+import { v4 as uuidv4 } from 'uuid';
+import { ActivationCode } from './dto/activation-input';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +28,7 @@ export class AuthService {
       data: {
         email: signUpInput.email,
         hashedPassword: hashedPassword,
+        activationCode: uuidv4(),
       },
     });
 
@@ -45,7 +48,11 @@ export class AuthService {
     });
 
     if (!customer) {
-      throw new Error('Access Denied');
+      throw new ForbiddenException('Access Denied');
+    }
+
+    if (customer.activationCode) {
+      throw new ForbiddenException('Please activate your account');
     }
 
     const isPasswordValid = await argon.verify(
@@ -54,7 +61,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      throw new Error('Access Denied');
+      throw new ForbiddenException('Access Denied');
     }
 
     const { accessToken, refreshToken } = await this.createTokens(
@@ -65,6 +72,23 @@ export class AuthService {
     await this.updateRefreshToken(customer.id, refreshToken);
 
     return { accessToken, refreshToken, customer };
+  }
+
+  async activate(activationCode: ActivationCode) {
+    const customer = await this.prisma.customer.findUnique({
+      where: { activationCode: activationCode.activationCode },
+    });
+
+    if (!customer) {
+      throw new ForbiddenException('Activation code is invalid');
+    }
+
+    await this.prisma.customer.update({
+      where: { id: customer.id },
+      data: { activationCode: null },
+    });
+
+    return true;
   }
 
   async getCustomer(id: string): Promise<GetCustomerResponse> {

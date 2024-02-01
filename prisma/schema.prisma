@@ -22,6 +22,7 @@ model Customer {
   hashedPassword     String
   hashedRefreshToken String?
   role               Role     @default(USER)
+  activationCode     String?  @unique
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
