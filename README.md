@@ -20,6 +20,14 @@
     - Required: Yes
 - **Return Type**: `SignResponse`
 
+### `activate`
+- **Description**: Activate an account by an activation code.
+- **Arguments**:
+  - `activationCode`: Input data for user activation.
+    - Type: `ActivationCode`
+    - Required: Yes
+- **Return Type**: `Boolean`
+
 ### `signin`
 - **Description**: Logs in an existing user.
 - **Arguments**:
@@ -87,6 +95,19 @@ variables:
   "input": {
 	   "email" : "test@test.com",
 	   "password":"12345"
+	}
+}
+```
+
+```bash
+mutation Activate($input:ActivationCode!){
+  activate(activationCode:$input)
+}
+
+variables:
+{
+  "input": {
+		"activationCode" : "01fe68c5-ccce-45cd-bff4-7a31d7639a74"
 	}
 }
 ```
@@ -174,6 +195,12 @@ mutation deleteCustomer($id:String!) {
 
 variables:
 {"id" : "1d68963f-a414-460a-adf4-a8df46ad618d"}
+```
+
+
+```bash
+HTTP Header
+{"authorization" : "Bearer JWT.Tok.en"}
 ```
 
 
