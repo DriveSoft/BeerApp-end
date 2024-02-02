@@ -39,8 +39,7 @@ export class AuthResolver {
   }
 
   @Mutation(() => LogoutResponse)
-  //logout(@Args('id') id: string) {
-  logout(@CurrentCustomerId() customerId: string,) {
+  logout(@CurrentCustomerId() customerId: string) {
     return this.authService.logout(customerId);
   }
 
