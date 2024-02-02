@@ -38,10 +38,6 @@
 
 ### `logout`
 - **Description**: Logs out a user.
-- **Arguments**:
-  - `id`: ID of the user.
-    - Type: `String`
-    - Required: Yes
 - **Return Type**: `LogoutResponse`
 
 ### `getNewTokens`
